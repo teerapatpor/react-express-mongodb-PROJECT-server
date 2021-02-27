@@ -2,6 +2,7 @@ const postController = require("../controllers").postController;
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const cors = require("cors");
 const verifyJWT = require("../middlewares/verifyJWT");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -34,7 +35,7 @@ router.post(
   postController.createForm
 );
 router.post("/delete", postController.deleteForm);
-router.get("/get", postController.getForm);
+router.get("/get", cors(), postController.getForm);
 router.post("/like", verifyJWT(), postController.likeForm);
 router.post("/unlike", verifyJWT(), postController.unlikeForm);
 

@@ -28,6 +28,6 @@ require("./middlewares/socket")(app, io, process.env.DATABASE);
 // app.listen(port, () => {
 //   console.log("connect on port: ", port);
 // });
-server.listen(process.env.PORT || 8888, () => {
-  console.log("server running on port:", process.env.PORT || 8888);
+server.listen(process.env.PORT, () => {
+  console.log("server running on port:", process.env.PORT);
 });

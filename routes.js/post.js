@@ -37,5 +37,11 @@ router.post("/delete", postController.deleteForm);
 router.get("/get", postController.getForm);
 router.post("/like", verifyJWT(), postController.likeForm);
 router.post("/unlike", verifyJWT(), postController.unlikeForm);
+router.post(
+  "/updateProfile",
+  verifyJWT(),
+  upload.single("productImage"),
+  postController.updateUserInfo
+);
 
 module.exports = router;

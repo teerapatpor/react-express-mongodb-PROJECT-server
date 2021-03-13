@@ -1,4 +1,6 @@
 const postModel = require("../models").post;
+const userModel = require("../models").user;
+const gebJWT = require("../services/genJWT");
 const {
   sendErrorResponse,
   sendSuccessResponse,
@@ -7,6 +9,7 @@ const fs = require("fs");
 module.exports = {
   createForm: async (req, res, next) => {
     try {
+      console.log(req.file);
       const formResult = await postModel.create({
         name: req.body.name,
         detail: req.body.detail,
@@ -54,6 +57,68 @@ module.exports = {
       sendSuccessResponse(res, true);
     } catch (error) {
       sendErrorResponse(res, false);
+    }
+  },
+  updateUserInfo: async (req, res, next) => {
+    try {
+      var result = {};
+      console.log(req.body);
+      var firstname =
+        req.body.newFname === "" ? req.body.oldFname : req.body.newFname;
+      var lastname =
+        req.body.newLname === "" ? req.body.oldLname : req.body.newLname;
+      var avatar = req.avatar;
+      if (req.file !== undefined) {
+        const info = await userModel.findOne({ _id: req._id });
+        if (info.avatar !== "" && info.avatar !== req.file.path) {
+          fs.unlinkSync(info.avatar);
+          avatar = req.file.path;
+        } else if (info.avatar === "") {
+          avatar = req.file.path;
+        } else {
+          avatar = info.avatar;
+        }
+        console.log("avatar: ", avatar);
+        result = await userModel.findOneAndUpdate(
+          {
+            _id: req._id,
+          },
+          {
+            $set: {
+              firstname: firstname,
+              lastname: lastname,
+              avatar: req.file.path,
+            },
+          },
+          { new: true }
+        );
+      } else {
+        await userModel.updateOne(
+          {
+            _id: req._id,
+          },
+          {
+            $set: {
+              firstname: firstname,
+              lastname: lastname,
+              avatar: req.body.avatar,
+            },
+          }
+        );
+      }
+      const token = gebJWT({
+        _id: req._id,
+        username: req.username,
+        firstname: firstname,
+        lastname: lastname,
+        avatar: avatar,
+        role: req.role,
+        chatRecieverID: req.chatRecieverID,
+      });
+      console.log("token: ", token);
+      sendSuccessResponse(res, token);
+    } catch (error) {
+      sendErrorResponse(res, error);
     }
   },
 };

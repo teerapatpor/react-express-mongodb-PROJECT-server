@@ -1,12 +1,16 @@
 const chatController = require("../controllers/chat");
+const userController = require("../controllers/user");
 const user = {};
 module.exports = (app, io, db) => {
   io.on("connection", function (socket) {
-    socket.on("user_login", (data) => {
+    socket.on("user_login", async (data) => {
+      const userInfo = await userController.getUserInfo({ userID: data.id });
       user[`${socket.id}`] = {
         userID: data.id,
         socketID: socket.id,
-        name: data.username,
+        firstname: userInfo.firstname,
+        lastname: userInfo.lastname,
+        avatar: userInfo.avatar,
       };
 
       // var check = true;
@@ -31,10 +35,9 @@ module.exports = (app, io, db) => {
     });
 
     socket.on("fetch_chat", async (value) => {
-      console.log(value, user);
       await socket.emit("chat_list", user);
     });
-    console.log("sid", socket.id);
+    //console.log("sid", socket.id);
     socket.on("message", async (data) => {
       await chatController.chat(data);
       const result = {

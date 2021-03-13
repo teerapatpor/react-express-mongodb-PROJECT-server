@@ -13,6 +13,9 @@ module.exports = () => (req, res, next) => {
     const user = decoded.user;
     req._id = user._id;
     req.username = user.username;
+    req.firstname = user.firstname;
+    req.lastname = user.lastname;
+    req.avatar = user.avatar;
     req.role = user.role;
     req.chatRecieverID = user.chatRecieverID;
     next();

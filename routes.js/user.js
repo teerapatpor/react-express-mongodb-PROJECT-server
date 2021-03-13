@@ -6,5 +6,6 @@ const verifyJWT = require("../middlewares/verifyJWT");
 router.post("/login", userController.login);
 router.post("/register", userController.register);
 router.get("/token", verifyJWT(), userController.tokenCheck);
+router.post("/getInfo", userController.getUserInfo);
 
 module.exports = router;
